@@ -1,0 +1,16 @@
+import cffi
+
+from pyroxene.companion_generator import generate_cdef, CompanionCodeGenerator
+
+gen = CompanionCodeGenerator(
+    inc_paths="${FFI_INCLUDE_DIRECTORIES}".split(";"),
+    src_files="${FFI_INTERFACE_SOURCES}".split(";"),
+    defines=[],
+)
+
+gen.preprocess()
+
+ffibuilder = cffi.FFI()
+ffibuilder.cdef(generate_cdef(gen))
+ffibuilder.set_source("mathlib_ffi", source='#include "mathlib.h"')
+ffibuilder.distutils_extension(tmpdir=".")
